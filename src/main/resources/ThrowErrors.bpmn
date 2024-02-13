@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_14ngsu4" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.18.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.3.0">
+  <bpmn:process id="ThrowErrors" name="ThrowErrors" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0p0sead</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0p0sead" sourceRef="StartEvent_1" targetRef="Gateway_106mzcj" />
+    <bpmn:parallelGateway id="Gateway_106mzcj">
+      <bpmn:incoming>Flow_0p0sead</bpmn:incoming>
+      <bpmn:outgoing>Flow_0mdft8y</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0u0xmid</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_0mdft8y" sourceRef="Gateway_106mzcj" targetRef="Activity_ThrowError" />
+    <bpmn:serviceTask id="Activity_ThrowError" name="Throw Error Worker">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="fail-explicit-worker" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=&#34;THROWERROR&#34;" target="errorPolicy" />
+          <zeebe:input source="=&#34;FailWorker&#34;" target="logMessage" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0mdft8y</bpmn:incoming>
+      <bpmn:outgoing>Flow_0xxw17o</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0u0xmid" sourceRef="Gateway_106mzcj" targetRef="Activity_FailConnector" />
+    <bpmn:endEvent id="Event_0e0i8vz">
+      <bpmn:incoming>Flow_14klqe4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_14klqe4" sourceRef="Activity_FailConnector" targetRef="Event_0e0i8vz" />
+    <bpmn:endEvent id="Event_0kvmdj8">
+      <bpmn:incoming>Flow_0xxw17o</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0xxw17o" sourceRef="Activity_ThrowError" targetRef="Event_0kvmdj8" />
+    <bpmn:serviceTask id="Activity_FailConnector" name="Fail Connector">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="fail-connector" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=true" target="throwErrorPlease" />
+          <zeebe:input source="=&#34;FailConnector&#34;" target="logMessage" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="errorExpression" value="bpmnError(error.code, error.message)" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0u0xmid</bpmn:incoming>
+      <bpmn:outgoing>Flow_14klqe4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:subProcess id="Activity_12h51nj" triggeredByEvent="true">
+      <bpmn:startEvent id="Event_0h4jq3e" name="10 mn">
+        <bpmn:outgoing>Flow_1pho0cd</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_0tt2de0">
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT10M</bpmn:timeDuration>
+        </bpmn:timerEventDefinition>
+      </bpmn:startEvent>
+      <bpmn:endEvent id="Event_1r833m1">
+        <bpmn:incoming>Flow_1pho0cd</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_1pho0cd" sourceRef="Event_0h4jq3e" targetRef="Event_1r833m1" />
+    </bpmn:subProcess>
+    <bpmn:boundaryEvent id="Event_0d39y6h" attachedToRef="Activity_FailConnector">
+      <bpmn:outgoing>Flow_08srh9v</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1lvnxwf" errorRef="Error_13xehjc" />
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Event_1ysj1jb" name="Bad temperature" attachedToRef="Activity_ThrowError">
+      <bpmn:outgoing>Flow_0ncl30p</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0ozeugs" errorRef="Error_0ufqs7i" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_0ncl30p" sourceRef="Event_1ysj1jb" targetRef="Activity_0bv95fq" />
+    <bpmn:endEvent id="Event_0x6n2zu">
+      <bpmn:incoming>Flow_04i697x</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_04i697x" sourceRef="Activity_0bv95fq" targetRef="Event_0x6n2zu" />
+    <bpmn:sequenceFlow id="Flow_08srh9v" sourceRef="Event_0d39y6h" targetRef="Activity_0l67ymb" />
+    <bpmn:endEvent id="Event_0tk8fxz">
+      <bpmn:incoming>Flow_07wlb52</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_07wlb52" sourceRef="Activity_0l67ymb" targetRef="Event_0tk8fxz" />
+    <bpmn:userTask id="Activity_0bv95fq" name="Bad temperature">
+      <bpmn:incoming>Flow_0ncl30p</bpmn:incoming>
+      <bpmn:outgoing>Flow_04i697x</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_0l67ymb" name="Fail connector">
+      <bpmn:incoming>Flow_08srh9v</bpmn:incoming>
+      <bpmn:outgoing>Flow_07wlb52</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmn:error id="Error_0hafteu" name="creditCardChargeError" errorCode="creditCardChargeError" />
+  <bpmn:error id="Error_0ufqs7i" name="BadTemperature" errorCode="BadTemperature" />
+  <bpmn:error id="Error_0z59a4z" name="BadWeather" errorCode="BadWeather" />
+  <bpmn:error id="Error_13xehjc" name="Exception" errorCode="badHumidity" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ThrowErrors">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="242" y="242" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1371b48_di" bpmnElement="Gateway_106mzcj">
+        <dc:Bounds x="385" y="235" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0jjdpsm_di" bpmnElement="Activity_ThrowError">
+        <dc:Bounds x="470" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0kvmdj8_di" bpmnElement="Event_0kvmdj8">
+        <dc:Bounds x="662" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0x6n2zu_di" bpmnElement="Event_0x6n2zu">
+        <dc:Bounds x="732" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0qxy7e5_di" bpmnElement="Activity_0bv95fq">
+        <dc:Bounds x="580" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0e0i8vz_di" bpmnElement="Event_0e0i8vz">
+        <dc:Bounds x="642" y="342" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0llsnbc_di" bpmnElement="Activity_FailConnector">
+        <dc:Bounds x="450" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0tk8fxz_di" bpmnElement="Event_0tk8fxz">
+        <dc:Bounds x="702" y="462" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1qah4bs_di" bpmnElement="Activity_0l67ymb">
+        <dc:Bounds x="550" y="440" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10q9qtl_di" bpmnElement="Activity_12h51nj" isExpanded="true">
+        <dc:Bounds x="160" y="370" width="200" height="120" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1bh2k3g_di" bpmnElement="Event_0h4jq3e">
+        <dc:Bounds x="200" y="412" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="203" y="455" width="31" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1r833m1_di" bpmnElement="Event_1r833m1">
+        <dc:Bounds x="292" y="412" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1pho0cd_di" bpmnElement="Flow_1pho0cd">
+        <di:waypoint x="236" y="430" />
+        <di:waypoint x="292" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0lwpl4c_di" bpmnElement="Event_1ysj1jb">
+        <dc:Bounds x="492" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="428" y="185" width="83" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_047uf2q_di" bpmnElement="Event_0d39y6h">
+        <dc:Bounds x="462" y="382" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0p0sead_di" bpmnElement="Flow_0p0sead">
+        <di:waypoint x="278" y="260" />
+        <di:waypoint x="385" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0mdft8y_di" bpmnElement="Flow_0mdft8y">
+        <di:waypoint x="410" y="235" />
+        <di:waypoint x="410" y="120" />
+        <di:waypoint x="470" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0u0xmid_di" bpmnElement="Flow_0u0xmid">
+        <di:waypoint x="410" y="285" />
+        <di:waypoint x="410" y="360" />
+        <di:waypoint x="450" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0xxw17o_di" bpmnElement="Flow_0xxw17o">
+        <di:waypoint x="570" y="120" />
+        <di:waypoint x="662" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04i697x_di" bpmnElement="Flow_04i697x">
+        <di:waypoint x="680" y="200" />
+        <di:waypoint x="732" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ncl30p_di" bpmnElement="Flow_0ncl30p">
+        <di:waypoint x="510" y="178" />
+        <di:waypoint x="510" y="200" />
+        <di:waypoint x="580" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14klqe4_di" bpmnElement="Flow_14klqe4">
+        <di:waypoint x="550" y="360" />
+        <di:waypoint x="642" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07wlb52_di" bpmnElement="Flow_07wlb52">
+        <di:waypoint x="650" y="480" />
+        <di:waypoint x="702" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08srh9v_di" bpmnElement="Flow_08srh9v">
+        <di:waypoint x="480" y="418" />
+        <di:waypoint x="480" y="480" />
+        <di:waypoint x="550" y="480" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

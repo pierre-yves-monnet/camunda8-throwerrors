@@ -1,4 +1,4 @@
-package com.camunda.errors;
+package io.camunda.connector.errors.connector;
 
 import java.util.Objects;
 
